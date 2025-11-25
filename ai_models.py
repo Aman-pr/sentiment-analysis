@@ -7,7 +7,7 @@ import os
 
 @st.cache_resource
 def get_chatbot():
-    api_key = os.environ.get("GROQ_API_KEY")
+    api_key = os.environ.get("GROQ_API_KEY") or st.secrets["groq"]["GROQ_API_KEY"]
     if not api_key:
         st.error("GROQ_API_KEY missing add it to your env vars. Chat part won't work, but sentiment still does.")
         st.stop()
