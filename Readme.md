@@ -1,1 +1,6 @@
-hellow
+streamlit==1.31.0
+langchain-groq==0.1.0
+textblob==0.17.1
+matplotlib==3.8.3
+langchain==0.1.0
+langchain-core==0.1.0
