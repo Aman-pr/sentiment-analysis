@@ -3,12 +3,12 @@
 A conversational AI chatbot with real-time sentiment analysis, built using LangChain, Groq API, and Streamlit.
 
 ## Features
-
-- Real-time chat interface with AI responses
-- Sentiment analysis for each user message
-- Conversation history stored in SQLite database
+ 
+- Real-time chat sentiment analysis for each user message
 - Full conversation sentiment analysis
-- Dark minimalistic UI
+- Real-time chat interface with AI responses
+- Conversation history stored in SQLite database
+
 
 ## Prerequisites
 
@@ -23,7 +23,14 @@ git clone https://github.com/yourusername/ai-chatbot-sentiment.git
 cd ai-chatbot-sentiment
 ```
 
-2. Install dependencies
+2. Create a Python virtual environment
+```bash
+python -m venv myenv
+source myenv/bin/activate   # Linux/Mac
+myenv\Scripts\activate      # Windows
+```
+   
+4. Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
@@ -60,9 +67,11 @@ streamlit run app.py
 ## Configuration
 
 The chatbot uses:
-- Model: Groq
+- Sentiment: TextBlob for Sentiment Analysis
+- Model: Langchain framework (Groq) for communication
 - Database: SQLite (chatbot_history.db)
-- Sentiment: TextBlob
+- Frontend: Streamlit 
+
 
 ## Deployment
 
@@ -73,12 +82,7 @@ The chatbot uses:
 3. Add GROQ_API_KEY in secrets
 4. Deploy
 
-### Render
 
-1. Create new Web Service
-2. Connect GitHub repository
-3. Add environment variable: GROQ_API_KEY
-4. Deploy
 
 ## License
 
