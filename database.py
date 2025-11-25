@@ -1,15 +1,10 @@
-"""
-Database operations for chatbot history
-"""
 import sqlite3
 from datetime import datetime
 
 def init_database():
-    """Initialize SQLite database"""
     conn = sqlite3.connect('chatbot_history.db')
     cursor = conn.cursor()
     
-    # Create conversations table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS conversations (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -23,7 +18,6 @@ def init_database():
         )
     ''')
     
-    # Create sessions table
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS sessions (
             session_id TEXT PRIMARY KEY,
@@ -37,11 +31,9 @@ def init_database():
     conn.close()
 
 def create_session(session_id):
-    """Create a new session in database"""
     conn = sqlite3.connect('chatbot_history.db')
     cursor = conn.cursor()
     
-    # Create title with just date and time
     title = datetime.now().strftime("%b %d, %I:%M %p")
     
     cursor.execute('''
@@ -53,7 +45,6 @@ def create_session(session_id):
     conn.close()
 
 def save_message(session_id, role, message, sentiment=None, polarity=None, subjectivity=None):
-    """Save a message to database"""
     conn = sqlite3.connect('chatbot_history.db')
     cursor = conn.cursor()
     
@@ -62,7 +53,6 @@ def save_message(session_id, role, message, sentiment=None, polarity=None, subje
         VALUES (?, ?, ?, ?, ?, ?)
     ''', (session_id, role, message, sentiment, polarity, subjectivity))
     
-    # Update message count
     cursor.execute('''
         UPDATE sessions 
         SET message_count = message_count + 1
@@ -73,7 +63,6 @@ def save_message(session_id, role, message, sentiment=None, polarity=None, subje
     conn.close()
 
 def load_session_messages(session_id):
-    """Load all messages from a session"""
     conn = sqlite3.connect('chatbot_history.db')
     cursor = conn.cursor()
     
@@ -89,7 +78,6 @@ def load_session_messages(session_id):
     return messages
 
 def get_all_sessions():
-    """Get all sessions from database"""
     conn = sqlite3.connect('chatbot_history.db')
     cursor = conn.cursor()
     
@@ -105,7 +93,6 @@ def get_all_sessions():
     return sessions
 
 def delete_session(session_id):
-    """Delete a session and its messages"""
     conn = sqlite3.connect('chatbot_history.db')
     cursor = conn.cursor()
     
