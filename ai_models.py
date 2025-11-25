@@ -1,6 +1,3 @@
-"""
-AI models: Groq chatbot and sentiment analysis
-"""
 import streamlit as st
 from langchain_groq import ChatGroq
 from langchain.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -10,10 +7,9 @@ import os
 
 @st.cache_resource
 def get_chatbot():
-    """Initialize the Groq chatbot"""
     api_key = os.environ.get("GROQ_API_KEY")
     if not api_key:
-        st.error("GROQ_API_KEY not found! Please set it in environment variables.")
+        st.error("GROQ_API_KEY missing add it to your env vars. Chat part won't work, but sentiment still does.")
         st.stop()
     
     return ChatGroq(
@@ -24,12 +20,10 @@ def get_chatbot():
     )
 
 def analyze_sentiment(text):
-    """Analyze sentiment of a single message using TextBlob"""
     blob = TextBlob(text)
     polarity = blob.sentiment.polarity
     subjectivity = blob.sentiment.subjectivity
     
-    # Determine sentiment
     if polarity > 0.1:
         sentiment = "Positive"
         color_class = "sentiment-positive"
@@ -48,21 +42,16 @@ def analyze_sentiment(text):
     }
 
 def analyze_conversation_sentiment(messages):
-    """Analyze sentiment of entire conversation"""
     user_messages = [msg["content"] for msg in messages if msg["role"] == "user"]
     
     if not user_messages:
         return None
     
-    # Combine all user messages
     full_text = " ".join(user_messages)
-    
-    # Analyze with TextBlob
     blob = TextBlob(full_text)
     polarity = blob.sentiment.polarity
     subjectivity = blob.sentiment.subjectivity
     
-    # Determine overall sentiment
     if polarity > 0.1:
         sentiment = "Positive"
         color = "#4ade80"
@@ -82,26 +71,22 @@ def analyze_conversation_sentiment(messages):
     }
 
 def generate_response(user_message, chat_history):
-    """Generate response using LangChain + Groq"""
     try:
         chatbot = get_chatbot()
         
-        # Create prompt template
         prompt = ChatPromptTemplate.from_messages([
             ("system", "You are a friendly and helpful AI assistant. Keep responses conversational and concise."),
             MessagesPlaceholder(variable_name="chat_history"),
             ("human", "{input}")
         ])
         
-        # Convert chat history to LangChain format
         history = []
-        for msg in chat_history[-6:]:  # Keep last 6 messages for context
+        for msg in chat_history[-6:]:
             if msg["role"] == "user":
                 history.append(HumanMessage(content=msg["content"]))
             elif msg["role"] == "assistant":
                 history.append(AIMessage(content=msg["content"]))
         
-        # Generate response
         chain = prompt | chatbot
         response = chain.invoke({
             "chat_history": history,
