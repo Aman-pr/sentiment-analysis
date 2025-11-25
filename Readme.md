@@ -10,7 +10,7 @@ A conversational AI chatbot with real-time sentiment analysis, built using LangC
 - Conversation history stored in SQLite database
 
 ## Demo 
-[Sentiment Analysis : Click here ]([https://miniature-space-giggle-x5945p6rjq6xfxw-8502.app.github.dev/](https://sentiment-analysis-avaz3kccgihk2wthaquwps.streamlit.app/))
+[Sentiment Analysis : Click here ](https://sentiment-analysis-avaz3kccgihk2wthaquwps.streamlit.app/)
 ## Prerequisites
 
 - Python 3.11+
