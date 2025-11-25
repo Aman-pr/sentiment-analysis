@@ -1,9 +1,4 @@
-"""
-CSS styles for the chatbot interface
-"""
-
 def get_custom_css():
-    """Return custom CSS styling"""
     return """
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
