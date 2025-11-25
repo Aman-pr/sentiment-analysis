@@ -1,13 +1,9 @@
-"""
-Main Streamlit application for AI Chatbot with Sentiment Analysis
-"""
 import streamlit as st
 from datetime import datetime
 import matplotlib.pyplot as plt
 import matplotlib
-matplotlib.use('Agg')  # Set backend before importing pyplot
+matplotlib.use('Agg')
 
-# Import custom modules
 from database import (
     init_database, create_session, save_message, 
     load_session_messages, get_all_sessions, delete_session
@@ -17,18 +13,13 @@ from ai_models import (
 )
 from styles import get_custom_css
 
-# Page config
 st.set_page_config(page_title="AI Chatbot", page_icon="💬", layout="centered")
-
-# Apply custom CSS
 st.markdown(get_custom_css(), unsafe_allow_html=True)
 
-# Initialize database
 if "db_initialized" not in st.session_state:
     init_database()
     st.session_state.db_initialized = True
 
-# Initialize session state
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "chat_ended" not in st.session_state:
@@ -39,15 +30,13 @@ if "session_id" not in st.session_state:
 if "delete_mode" not in st.session_state:
     st.session_state.delete_mode = False
 
-# Header
 st.markdown("""
     <div class="chat-header">
-        <h1>AI Chatbot</h1>
-        <p>Real-time Sentiment Analysis with Database Storage</p>
+        <h1>Chatbot</h1>
+        <p>Real-time Sentiment Analysis</p>
     </div>
 """, unsafe_allow_html=True)
 
-# Sidebar
 with st.sidebar:
     st.title("Controls")
     
@@ -67,26 +56,22 @@ with st.sidebar:
     
     st.markdown("---")
     
-    # Real-time stats - SMALLER
     st.markdown("### Analysis")
     user_message_count = len([m for m in st.session_state.messages if m["role"] == "user"])
     
     if st.session_state.messages:
-        # Count sentiments
         sentiments = [msg.get("sentiment", {}).get("sentiment", "") for msg in st.session_state.messages if msg["role"] == "user" and "sentiment" in msg]
         if sentiments:
             positive_count = sentiments.count("Positive")
             negative_count = sentiments.count("Negative")
             neutral_count = sentiments.count("Neutral")
             
-            # Stack metrics vertically
             st.metric("Positive", positive_count)
             st.metric("Negative", negative_count)
             st.metric("Neutral", neutral_count)
     
     st.markdown("---")
     
-    # Previous sessions - ChatGPT style
     with st.expander("Previous Chats", expanded=True):
         sessions = get_all_sessions()
         
@@ -105,12 +90,10 @@ with st.sidebar:
                         disabled=is_current
                     ):
                         if not is_current:
-                            # Load session
                             st.session_state.session_id = session_id_item
                             st.session_state.messages = []
                             st.session_state.chat_ended = False
                             
-                            # Load messages from database
                             db_messages = load_session_messages(session_id_item)
                             for role, message, sentiment, polarity, subjectivity, timestamp in db_messages:
                                 msg = {"role": role, "content": message}
@@ -138,12 +121,9 @@ with st.sidebar:
             st.info("No saved chats yet")
     
     st.markdown("---")
-    st.caption("Powered by LangChain + Groq")
-    st.caption("SQLite Database Storage")
+    st.caption("Assignment -- Aman")
 
-# Main chat area
 if not st.session_state.chat_ended:
-    # Load messages from database if empty
     if not st.session_state.messages:
         db_messages = load_session_messages(st.session_state.session_id)
         for role, message, sentiment, polarity, subjectivity, timestamp in db_messages:
@@ -157,12 +137,10 @@ if not st.session_state.chat_ended:
                 }
             st.session_state.messages.append(msg)
     
-    # Display chat messages
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.write(message["content"])
             
-            # Show sentiment for user messages
             if message["role"] == "user" and "sentiment" in message:
                 sent_data = message["sentiment"]
                 st.markdown(f"""
@@ -171,12 +149,9 @@ if not st.session_state.chat_ended:
                     </div>
                 """, unsafe_allow_html=True)
     
-    # Chat input
     if prompt := st.chat_input("Type your message here..."):
-        # Analyze sentiment immediately
         sentiment_data = analyze_sentiment(prompt)
         
-        # Save to database
         save_message(
             st.session_state.session_id,
             "user",
@@ -186,7 +161,6 @@ if not st.session_state.chat_ended:
             sentiment_data['subjectivity']
         )
         
-        # Add user message with sentiment
         st.session_state.messages.append({
             "role": "user", 
             "content": prompt,
@@ -201,20 +175,17 @@ if not st.session_state.chat_ended:
                 </div>
             """, unsafe_allow_html=True)
         
-        # Generate and display assistant response
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
                 response = generate_response(prompt, st.session_state.messages)
                 st.write(response)
         
-        # Save assistant response to database
         save_message(st.session_state.session_id, "assistant", response)
         
         st.session_state.messages.append({"role": "assistant", "content": response})
         st.rerun()
 
 else:
-    # Show full conversation analysis
     st.markdown("## Conversation Analysis")
     
     analysis = analyze_conversation_sentiment(st.session_state.messages)
@@ -232,7 +203,6 @@ else:
         with col3:
             st.metric("Messages Analyzed", analysis["message_count"])
         
-        # Visualization
         st.markdown("### Sentiment Breakdown")
         
         fig, ax = plt.subplots(figsize=(8, 4), facecolor='#1a1a1a')
@@ -254,7 +224,6 @@ else:
         
         st.pyplot(fig)
         
-        # Interpretation
         st.markdown("### Interpretation")
         
         if analysis['polarity'] > 0.1:
@@ -266,7 +235,6 @@ else:
         
         st.info(interpretation)
         
-        # Show conversation history
         with st.expander("View Conversation History"):
             for msg in st.session_state.messages:
                 if msg["role"] == "user":
