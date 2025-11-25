@@ -4,6 +4,8 @@ Main Streamlit application for AI Chatbot with Sentiment Analysis
 import streamlit as st
 from datetime import datetime
 import matplotlib.pyplot as plt
+import matplotlib
+matplotlib.use('Agg')  # Set backend before importing pyplot
 
 # Import custom modules
 from database import (
